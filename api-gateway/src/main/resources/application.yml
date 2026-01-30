@@ -1,0 +1,25 @@
+server:
+  port: 4004
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: patient-service-route
+          uri: http://patient-service:4000
+          predicates:
+            - Path=/api/patients, /api/patients/**
+          filters:
+            - RewritePath=/api/patients(?<remaining>/?.*),/patients${remaining}
+        - id: api-docs-patient-route
+          uri: http://patient-service:4000
+          predicates:
+            - Path=/api-docs/patients
+          filters:
+            - RewritePath=/api-docs/patients,/v3/api-docs
